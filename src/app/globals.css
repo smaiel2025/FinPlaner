@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+/* KBC-inspired demo identity (not official KBC brand assets). */
+@theme {
+  --color-ink: #0b1f3a;
+  --color-ink-soft: #1d3557;
+  --color-brand: #0a6ed1;
+  --color-brand-600: #075bb0;
+  --color-brand-50: #eaf3fc;
+  --color-brand-100: #d3e6f8;
+  --color-sky: #22b5e8;
+  --color-growth: #0f9d77;
+  --color-growth-50: #e7f6f1;
+  --color-attention: #c9820a;
+  --color-attention-50: #fdf4e3;
+  --color-risk: #c2413b;
+  --color-risk-50: #fbecea;
+  --color-surface: #f5f7fa;
+  --color-line: #e3e8ef;
+  --color-muted: #64748b;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  --shadow-card: 0 1px 2px rgba(11, 31, 58, 0.04), 0 4px 16px rgba(11, 31, 58, 0.05);
+  --shadow-lift: 0 8px 30px rgba(11, 31, 58, 0.12);
+}
+
+html,
+body {
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes soft-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(15, 157, 119, 0.35); }
+  50% { box-shadow: 0 0 0 8px rgba(15, 157, 119, 0); }
+}
+
+.milestone-glow {
+  animation: soft-pulse 2.4s ease-in-out 2;
+}
+
+@keyframes typing {
+  0%, 80%, 100% { opacity: 0.25; transform: translateY(0); }
+  40% { opacity: 1; transform: translateY(-2px); }
+}
+
+.typing-dot {
+  animation: typing 1.2s infinite ease-in-out;
+}
