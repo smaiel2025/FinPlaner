@@ -8,9 +8,7 @@ import type { FeedbackRecord } from "@/lib/types/domain";
 import type { GoalProjection } from "@/lib/types/intelligence";
 import { eur, monthYear, shortDate } from "@/lib/utils/format";
 import { goalService } from "./mock";
-import { getState, mutate, nextId } from "./store";
-
-const CUSTOMER = "cust-sophie-001";
+import { currentCustomerId, getState, mutate, nextId } from "./store";
 
 export interface ApprovalResult {
   changes: string[];
@@ -50,7 +48,7 @@ export function approveActions(opportunityKey: string, actionIds: string[]): App
         changes.push(`Standing order increased by ${eur(action.amount ?? 0)}/month from the next transfer`);
         break;
       case "transfer":
-        if (action.goalId && action.amount) goalService.contribute(CUSTOMER, action.goalId, action.amount, today);
+        if (action.goalId && action.amount) goalService.contribute(currentCustomerId(), action.goalId, action.amount, today);
         changes.push(`${eur(action.amount ?? 0)} moved to your goal`);
         break;
       case "reschedule_transfer": {

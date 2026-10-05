@@ -150,6 +150,7 @@ export const goals: Goal[] = [
 ];
 
 export const defaultPreferences: Preferences = {
+  copilotEnabled: true,
   proactiveEnabled: true,
   frequency: "balanced",
   channels: { app: true, web: true, whatsapp: true, email: false },

@@ -6,6 +6,7 @@ import { GoalCard } from "@/components/goals/GoalCard";
 import { FactorList } from "@/components/health/FactorList";
 import { InsightCard } from "@/components/insights/InsightCard";
 import { useCopilot } from "@/components/providers/CopilotProvider";
+import { useTenant } from "@/components/providers/TenantProvider";
 import { Button } from "@/components/ui/primitives";
 import { api } from "@/lib/api/client";
 import type { ChatBlock } from "@/lib/types/chat";
@@ -56,6 +57,22 @@ function RecommendationBlock({ opp }: { opp: ScoredOpportunity }) {
   );
 }
 
+function AdvisorBlock({ reason, onSuggest }: { reason: string; onSuggest: (text: string) => void }) {
+  const { tenant } = useTenant();
+  return (
+    <div className="flex items-center justify-between gap-3 rounded-2xl border border-line bg-white p-4">
+      <div className="flex items-center gap-3">
+        <span className="grid h-9 w-9 place-items-center rounded-full bg-ink text-white"><UserRound size={16} /></span>
+        <div>
+          <div className="text-[14px] font-medium text-ink">Talk to a {tenant.advisorLabel}</div>
+          <div className="text-[12px] text-muted">{reason}. Your context is shared only with your consent.</div>
+        </div>
+      </div>
+      <Button size="sm" variant="secondary" onClick={() => onSuggest("__advisor__")}>Request a call</Button>
+    </div>
+  );
+}
+
 export function BlockView({ block, onSuggest }: { block: ChatBlock; onSuggest: (text: string) => void }) {
   switch (block.type) {
     case "affordability":
@@ -98,18 +115,7 @@ export function BlockView({ block, onSuggest }: { block: ChatBlock; onSuggest: (
     case "memory":
       return <MemoryBlock block={block} />;
     case "advisor":
-      return (
-        <div className="flex items-center justify-between gap-3 rounded-2xl border border-line bg-white p-4">
-          <div className="flex items-center gap-3">
-            <span className="grid h-9 w-9 place-items-center rounded-full bg-ink text-white"><UserRound size={16} /></span>
-            <div>
-              <div className="text-[14px] font-medium text-ink">Talk to a KBC advisor</div>
-              <div className="text-[12px] text-muted">{block.reason}. Your context is shared only with your consent.</div>
-            </div>
-          </div>
-          <Button size="sm" variant="secondary" onClick={() => onSuggest("__advisor__")}>Request a call</Button>
-        </div>
-      );
+      return <AdvisorBlock reason={block.reason} onSuggest={onSuggest} />;
     case "suggestions":
       return (
         <div className="flex flex-wrap gap-2">

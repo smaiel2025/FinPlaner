@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { analyzeCustomer } from "@/lib/engine";
-import { resetState, getState } from "./store";
+import { currentCustomerId, getState, mutate, resetState } from "./store";
 import { approveActions } from "./actions";
 
 describe("approval flow", () => {
@@ -23,6 +23,18 @@ describe("approval flow", () => {
     expect(result.changes.length).toBe(2);
     expect(getState().feedback.some((f) => f.key === hero.key && f.outcome === "accepted")).toBe(true);
     expect(after.opportunities.find((o) => o.key === hero.key)?.relevance.surfaced ?? false).toBe(false);
+  });
+
+  it("approves using the profile id, not a fixed customer", () => {
+    mutate((s) => {
+      s.profile.id = "cust-host-42";
+    });
+    expect(currentCustomerId()).toBe("cust-host-42");
+    const hero = analyzeCustomer(getState()).opportunities.find((o) => o.type === "goal_deviation")!;
+    approveActions(hero.key, hero.actions.map((a) => a.id));
+    const house = getState().goals.find((g) => g.type === "house")!;
+    expect(getState().profile.id).toBe("cust-host-42");
+    expect(house.monthlyContribution).toBe(779);
   });
 
   it("refuses to execute when no actions are selected", () => {

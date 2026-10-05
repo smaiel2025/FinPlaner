@@ -3,6 +3,7 @@
 import clsx from "clsx";
 import { Database, Trash2 } from "lucide-react";
 import { useCopilot } from "@/components/providers/CopilotProvider";
+import { useTenant } from "@/components/providers/TenantProvider";
 import { PageHeader, WithSnapshot } from "@/components/ui/PageStates";
 import { Button, Card, SectionTitle, Toggle } from "@/components/ui/primitives";
 import { api } from "@/lib/api/client";
@@ -23,22 +24,15 @@ const TOPICS: { id: Topic; label: string }[] = [
   { id: "investing", label: "Investing" },
 ];
 
-const CHANNELS: { id: keyof Preferences["channels"]; label: string }[] = [
-  { id: "app", label: "KBC Mobile app" },
-  { id: "web", label: "KBC Touch (web)" },
-  { id: "whatsapp", label: "WhatsApp" },
-  { id: "email", label: "Email" },
-];
-
-const DATA_USE = [
-  "Transactions and balances from your KBC accounts, to detect patterns and forecast cashflow.",
-  "Your goals and the preferences on this page.",
-  "Facts you shared in conversation - only if memory is on, and you can delete them below.",
-  "Never: data from outside KBC, your contacts, location or any third-party profiles.",
-];
-
 export default function SettingsPage() {
   const { updatePreferences, refresh, notify } = useCopilot();
+  const { tenant } = useTenant();
+  const channels: { id: keyof Preferences["channels"]; label: string }[] = [
+    { id: "app", label: tenant.appChannelLabel },
+    { id: "web", label: tenant.webChannelLabel },
+    { id: "whatsapp", label: "WhatsApp" },
+    { id: "email", label: "Email" },
+  ];
 
   const save = async (patch: Partial<Preferences>) => {
     try {
@@ -100,7 +94,7 @@ export default function SettingsPage() {
               <Card className="p-6">
                 <SectionTitle title="Channels" />
                 <div className="divide-y divide-line">
-                  {CHANNELS.map((c) => (
+                  {channels.map((c) => (
                     <Toggle key={c.id} checked={p.channels[c.id]} onChange={(v) => save({ channels: { ...p.channels, [c.id]: v } })} label={c.label} />
                   ))}
                 </div>
@@ -158,12 +152,12 @@ export default function SettingsPage() {
             <Card className="p-6">
               <SectionTitle title="How your data is used" />
               <ul className="space-y-2">
-                {DATA_USE.map((d) => (
+                {tenant.dataUse.map((d) => (
                   <li key={d} className="flex gap-2.5 text-[13px] text-slate-600"><Database size={14} className="mt-0.5 shrink-0 text-muted" /> {d}</li>
                 ))}
               </ul>
               <p className="mt-4 text-[12px] text-muted">
-                Current AI mode: {ai.mode === "llm" ? `LLM phrasing (${ai.provider})` : "deterministic"}. Numbers are always computed by KBC&apos;s engine. A language model, if enabled, only rephrases them and never sees your full transaction history.
+                Current AI mode: {ai.mode === "llm" ? `LLM phrasing (${ai.provider})` : "deterministic"}. Numbers are always computed by {tenant.bankName}&apos;s engine. A language model, if enabled, only rephrases them and never sees your full transaction history.
               </p>
             </Card>
           </div>

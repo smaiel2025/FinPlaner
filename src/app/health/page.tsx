@@ -5,11 +5,13 @@ import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YA
 import { FactorList } from "@/components/health/FactorList";
 import { MomentumIndicator, ScoreChange } from "@/components/health/Momentum";
 import { ScoreRing } from "@/components/health/ScoreRing";
+import { useTenant } from "@/components/providers/TenantProvider";
 import { PageHeader, WithSnapshot } from "@/components/ui/PageStates";
 import { Card, SectionTitle } from "@/components/ui/primitives";
 import { monthLabel } from "@/lib/utils/format";
 
 export default function HealthPage() {
+  const { tenant } = useTenant();
   return (
     <WithSnapshot>
       {({ context: ctx }) => {
@@ -83,7 +85,7 @@ export default function HealthPage() {
                 <div className="flex gap-3">
                   <Info size={18} className="mt-0.5 shrink-0 text-brand" />
                   <div className="space-y-3 text-[13px] leading-relaxed text-slate-600">
-                    <p><span className="font-medium text-ink">Demo metric.</span> This score was designed for the hackathon prototype. It is not an official KBC metric and is never used for credit decisions.</p>
+                    <p><span className="font-medium text-ink">Demo metric.</span> {tenant.healthScoreNote}</p>
                     <p>It compares you only with your own past - never with other customers.</p>
                     <p>A temporary dip (for example after a one-off purchase) is normal and says nothing about you.</p>
                   </div>

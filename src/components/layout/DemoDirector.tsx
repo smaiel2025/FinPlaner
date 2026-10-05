@@ -52,7 +52,7 @@ export function DemoDirector() {
     {
       id: "proactive",
       title: "3 · Proactive, cross-channel",
-      body: "The insurer's payment request arrives while Sophie is not in the app.",
+      body: `The insurer's payment request arrives while ${snapshot?.context.profile.firstName ?? "the customer"} is not in the app.`,
       done: invoiceSent,
       action: () =>
         run("proactive", async () => {

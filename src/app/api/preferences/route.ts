@@ -11,6 +11,7 @@ const Topics = z.object({
 }).partial();
 
 const Patch = z.object({
+  copilotEnabled: z.boolean(),
   proactiveEnabled: z.boolean(),
   frequency: z.enum(["minimal", "balanced", "proactive"]),
   channels: z.object({ app: z.boolean(), web: z.boolean(), whatsapp: z.boolean(), email: z.boolean() }).partial(),
@@ -34,5 +35,5 @@ export const PATCH = handle(async (req: Request) => {
     topics: { ...current.topics, ...patch.topics },
     consent: { ...current.consent, ...patch.consent },
   };
-  return ok({ preferences: customerService.updatePreferences("cust-sophie-001", merged) });
+  return ok({ preferences: customerService.updatePreferences(getState().profile.id, merged) });
 });

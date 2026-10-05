@@ -1,4 +1,8 @@
+"use client";
+
 import { ArrowRight } from "lucide-react";
+import { useCopilot } from "@/components/providers/CopilotProvider";
+import { useTenant } from "@/components/providers/TenantProvider";
 import { Card, SectionTitle } from "@/components/ui/primitives";
 
 const PIPELINE = [
@@ -30,9 +34,11 @@ const MATHS = [
 ];
 
 export function Architecture() {
+  const { snapshot } = useCopilot();
+  const name = snapshot?.context.profile.firstName ?? "the customer";
   return (
     <Card className="p-6">
-      <SectionTitle title="Intelligence pipeline" subtitle="Every recommendation passes each stage. The trace below shows it for Sophie." />
+      <SectionTitle title="Intelligence pipeline" subtitle={`Every recommendation passes each stage. The trace below shows it for ${name}.`} />
       <div className="flex flex-wrap items-stretch gap-2">
         {PIPELINE.map((s, i) => (
           <div key={s.label} className="flex items-center gap-2">
@@ -49,6 +55,7 @@ export function Architecture() {
 }
 
 export function Scalability() {
+  const { tenant } = useTenant();
   return (
     <div className="grid gap-5 lg:grid-cols-[1.4fr_1fr]">
       <Card className="overflow-x-auto p-6">
@@ -75,7 +82,7 @@ export function Scalability() {
             <div key={k} className="flex justify-between gap-3 py-2"><dt className="text-muted">{k}</dt><dd className="tabular text-right font-medium text-ink">{v}</dd></div>
           ))}
         </dl>
-        <p className="mt-3 text-[11px] text-muted">Illustrative assumptions for sizing, not measured KBC figures.</p>
+        <p className="mt-3 text-[11px] text-muted">Illustrative assumptions for sizing, not measured {tenant.bankName} figures.</p>
       </Card>
     </div>
   );

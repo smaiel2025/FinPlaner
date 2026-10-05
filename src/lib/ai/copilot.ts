@@ -8,7 +8,8 @@ import type { ChatMessage } from "@/lib/types/chat";
 import { getAdapter } from "./adapter";
 import { draftAnswer } from "./fallback";
 import { classifyIntent } from "./intents";
-import { SYSTEM_PROMPT, minimalFacts, rephrasePrompt } from "./prompts";
+import { getActiveTenant } from "@/lib/tenant";
+import { minimalFacts, rephrasePrompt, systemPrompt } from "./prompts";
 
 const MAX_MESSAGE_LENGTH = 500;
 
@@ -32,7 +33,11 @@ export async function respond(message: string, channel: "app" | "whatsapp" = "ap
   const adapter = getAdapter();
   if (adapter) {
     try {
-      reply = await adapter.complete(SYSTEM_PROMPT, rephrasePrompt(minimalFacts(analyzeCustomer(getState())), draft.text, text));
+      const tenant = getActiveTenant();
+      reply = await adapter.complete(
+        systemPrompt(tenant.bankName, tenant.productName, tenant.advisorLabel),
+        rephrasePrompt(minimalFacts(analyzeCustomer(getState())), draft.text, text),
+      );
       source = "llm";
     } catch (err) {
       console.warn("[copilot] LLM unavailable, using deterministic answer:", (err as Error).message);

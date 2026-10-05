@@ -137,6 +137,8 @@ export type Topic = "spending" | "saving" | "goals" | "bills" | "investing" | "i
 export type Frequency = "minimal" | "balanced" | "proactive";
 
 export interface Preferences {
+  /** Host switch. Off means the bank app stays as it is and the engine does not score. */
+  copilotEnabled: boolean;
   proactiveEnabled: boolean;
   frequency: Frequency;
   channels: Record<"app" | "web" | "whatsapp" | "email", boolean>;

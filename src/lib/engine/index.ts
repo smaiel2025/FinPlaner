@@ -13,10 +13,12 @@ import { detectOpportunities } from "./opportunities";
 import { buildFinancialProfile } from "./profile";
 import { scoreOpportunity } from "./relevance";
 import { cashflowForecast } from "./signals";
+import { getActiveTenant } from "@/lib/tenant";
 
 export function scoreAll(state: CustomerState, thresholdOverride?: number): ScoredOpportunity[] {
+  if (state.preferences.copilotEnabled === false) return [];
   const projections = projectAll(state);
-  return detectOpportunities(state, projections)
+  return detectOpportunities(state, projections, getActiveTenant().enabledDetectors)
     .map((opp) => {
       const relevance = scoreOpportunity(opp, state, thresholdOverride);
       const { channel, reason } = chooseChannel(opp, relevance, state);

@@ -1,8 +1,12 @@
+"use client";
+
+import { useTenant } from "@/components/providers/TenantProvider";
 import { Card, SectionTitle, Stat } from "@/components/ui/primitives";
 import type { CustomerContext } from "@/lib/engine";
 import { eur, shortDate } from "@/lib/utils/format";
 
 export function FinancialSnapshot({ ctx }: { ctx: CustomerContext }) {
+  const { tenant } = useTenant();
   const current = ctx.accounts.find((a) => a.type === "current")?.balance ?? 0;
   const savings = ctx.accounts.filter((a) => a.type === "savings").reduce((s, a) => s + a.balance, 0);
   const invest = ctx.accounts.filter((a) => a.type === "investment").reduce((s, a) => s + a.balance, 0);
@@ -10,7 +14,7 @@ export function FinancialSnapshot({ ctx }: { ctx: CustomerContext }) {
 
   return (
     <Card className="h-full p-6">
-      <SectionTitle title="Financial snapshot" subtitle="Across your KBC accounts" />
+      <SectionTitle title="Financial snapshot" subtitle={`Across your ${tenant.bankName} accounts`} />
       <div className="grid grid-cols-2 gap-5">
         <Stat label="Current account" value={eur(current)} />
         <Stat label="Savings" value={eur(savings)} hint="3 goal pots" />

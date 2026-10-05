@@ -10,6 +10,7 @@ import type { CustomerState } from "@/lib/types/domain";
 import { addMonths, monthsBetween } from "@/lib/utils/dates";
 import { eur, longDate, monthYear, pct, weeksPhrase } from "@/lib/utils/format";
 import type { ParsedIntent } from "./intents";
+import { getActiveTenant } from "@/lib/tenant";
 import { houseTimelineFact, type FactProposal } from "./memory";
 
 export interface DraftAnswer {
@@ -26,7 +27,9 @@ const SUGGESTIONS = [
   "How am I doing on my goals?",
 ];
 
-const advisorLine = "I can help you understand the options and prepare the next step. For a personal recommendation, a KBC advisor can go through it with you.";
+function advisorLine() {
+  return `I can help you understand the options and prepare the next step. For a personal recommendation, a ${getActiveTenant().advisorLabel} can go through it with you.`;
+}
 
 export function draftAnswer(p: ParsedIntent, ctx: CustomerContext, state: CustomerState, message: string, factId: string): DraftAnswer {
   const house = ctx.projections.find((x) => x.goal.type === "house");
@@ -63,7 +66,7 @@ export function draftAnswer(p: ParsedIntent, ctx: CustomerContext, state: Custom
       } else if (r.verdict === "tradeoff") {
         text = `Yes, but spending ${eur(p.amount)} would delay your ${goal} by about ${weeksPhrase(main.delayWeeks).replace("~", "")}. Here are ${r.options.length} options so you can choose the trade-off that feels right:`;
       } else {
-        text = `It is possible, but ${eur(p.amount)} would delay your ${goal} by ${weeksPhrase(main.delayWeeks).replace("~", "about ")}. Your emergency fund stays untouched either way. ${advisorLine}`;
+        text = `It is possible, but ${eur(p.amount)} would delay your ${goal} by ${weeksPhrase(main.delayWeeks).replace("~", "about ")}. Your emergency fund stays untouched either way. ${advisorLine()}`;
       }
       const blocks: ChatBlock[] = [{ type: "affordability", result: r }];
       if (r.verdict === "stretch") blocks.push({ type: "advisor", reason: "Large purchase that may involve financing" });
@@ -138,19 +141,19 @@ export function draftAnswer(p: ParsedIntent, ctx: CustomerContext, state: Custom
       const invest = ctx.accounts.find((a) => a.type === "investment");
       const emergency = ctx.projections.find((x) => x.goal.type === "emergency");
       return {
-        text: `${advisorLine} For context: you hold ${eur(invest?.balance ?? 0)} in a balanced fund, and your emergency fund is ${pct(emergency?.progress ?? 0)} complete. Many people complete their emergency buffer before investing more, but the right choice depends on your situation and risk preference.`,
+        text: `${advisorLine()} For context: you hold ${eur(invest?.balance ?? 0)} in a balanced fund, and your emergency fund is ${pct(emergency?.progress ?? 0)} complete. Many people complete their emergency buffer before investing more, but the right choice depends on your situation and risk preference.`,
         blocks: [{ type: "advisor", reason: "Investment decisions are regulated advice" }],
       };
     }
 
     case "insurance_coverage":
       return {
-        text: `You currently have: ${ctx.insurance.map((i) => `${i.name} (${i.coverage})`).join("; ")}. ${advisorLine}`,
+        text: `You currently have: ${ctx.insurance.map((i) => `${i.name} (${i.coverage})`).join("; ")}. ${advisorLine()}`,
         blocks: [{ type: "advisor", reason: "Insurance coverage review" }],
       };
 
     case "credit":
-      return { text: `${advisorLine} I can show how a loan or mortgage payment would affect your goals once you have an indicative amount.`, blocks: [{ type: "advisor", reason: "Credit decisions require a personal assessment" }] };
+      return { text: `${advisorLine()} I can show how a loan or mortgage payment would affect your goals once you have an indicative amount.`, blocks: [{ type: "advisor", reason: "Credit decisions require a personal assessment" }] };
 
     case "greeting":
       return { text: `Hi ${firstName}. I can help with decisions, spending questions and your goals. What's on your mind?`, blocks: [{ type: "suggestions", items: SUGGESTIONS }] };

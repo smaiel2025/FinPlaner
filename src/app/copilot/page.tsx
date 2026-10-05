@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { MessageBubble, TypingIndicator } from "@/components/chat/MessageBubble";
 import { useCopilot } from "@/components/providers/CopilotProvider";
+import { useTenant } from "@/components/providers/TenantProvider";
 import { api } from "@/lib/api/client";
 import type { ChatMessage } from "@/lib/types/chat";
 
@@ -20,7 +21,8 @@ const STARTERS = [
 function CopilotChat() {
   const params = useSearchParams();
   const router = useRouter();
-  const { refresh, notify } = useCopilot();
+  const { refresh, notify, snapshot } = useCopilot();
+  const { tenant } = useTenant();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [input, setInput] = useState("");
@@ -90,7 +92,7 @@ function CopilotChat() {
       <div className="flex-1 space-y-5 pb-4">
         {loaded && messages.length === 0 && !pending && (
           <div className="rounded-3xl border border-line bg-white p-6">
-            <div className="text-[15px] font-medium text-ink">Hi Sophie, what would you like to figure out?</div>
+            <div className="text-[15px] font-medium text-ink">Hi {snapshot?.context.profile.firstName ?? "there"}, what would you like to figure out?</div>
             <p className="mt-1 text-[13px] text-muted">I can check affordability, explain spending changes, plan goals and show your progress.</p>
             <div className="mt-4 flex flex-wrap gap-2">
               {STARTERS.map((s) => (
@@ -132,7 +134,7 @@ function CopilotChat() {
           </button>
         </form>
         <div className="mt-1.5 flex items-center justify-center gap-1 text-[11px] text-slate-400">
-          <ShieldCheck size={11} /> Not personal financial advice. Regulated decisions are handed to a KBC advisor.
+          <ShieldCheck size={11} /> {tenant.disclaimer}
         </div>
       </div>
     </div>

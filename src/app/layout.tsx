@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { AppShell } from "@/components/layout/AppShell";
 import { CopilotProvider } from "@/components/providers/CopilotProvider";
+import { TenantProvider } from "@/components/providers/TenantProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -18,9 +19,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
-        <CopilotProvider>
-          <AppShell>{children}</AppShell>
-        </CopilotProvider>
+        <TenantProvider>
+          <CopilotProvider>
+            <AppShell>{children}</AppShell>
+          </CopilotProvider>
+        </TenantProvider>
       </body>
     </html>
   );

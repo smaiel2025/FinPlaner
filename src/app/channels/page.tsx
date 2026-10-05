@@ -16,7 +16,7 @@ const time = (iso: string) => new Date(iso).toLocaleTimeString("en-GB", { hour: 
 const ROUTING = [
   { icon: Bell, label: "In-app", rule: "Default for insights, trade-offs and anything that needs detail." },
   { icon: MessageCircle, label: "WhatsApp", rule: "Only urgent risks (urgency 80+) or milestones on high-priority goals, if you opted in and it passes the stricter messaging score." },
-  { icon: Smartphone, label: "Push / email", rule: "Supported by the channel layer; disabled for Sophie in this demo." },
+  { icon: Smartphone, label: "Push / email", rule: "Supported by the channel layer; disabled for this customer in the demo." },
 ];
 
 export default function ChannelsPage() {
@@ -48,7 +48,7 @@ export default function ChannelsPage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <PageHeader title="Messaging preview" subtitle="How the Co-Pilot reaches Sophie outside the app. One conversation, continued across channels." />
+      <PageHeader title="Messaging preview" subtitle={`How the Co-Pilot reaches ${snapshot?.context.profile.firstName ?? "the customer"} outside the app. One conversation, continued across channels.`} />
       <div className="grid gap-8 lg:grid-cols-[360px_1fr]">
         <PhoneMockup
           footer={
@@ -77,7 +77,7 @@ export default function ChannelsPage() {
             {latestRisk ? (
               <div className="space-y-2 text-[14px] text-slate-600">
                 <p><span className="font-medium text-ink">{latestRisk.title}.</span> The insurer confirmed the payment request, so certainty jumped and the payment is due within 3 days.</p>
-                <p>Relevance was high enough to justify an interruption, Sophie prefers WhatsApp and gave consent for messaging. Anything less urgent would have waited in the app.</p>
+                <p>Relevance was high enough to justify an interruption, {snapshot?.context.profile.firstName ?? "the customer"} prefers WhatsApp and gave consent for messaging. Anything less urgent would have waited in the app.</p>
                 <Link href="/copilot?thread=insurance" className="inline-flex items-center gap-1 pt-1 text-[13px] font-medium text-brand hover:underline">
                   Continue in the app with full context <ArrowRight size={14} />
                 </Link>

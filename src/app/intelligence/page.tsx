@@ -23,7 +23,7 @@ interface IntelligenceData {
 }
 
 export default function IntelligencePage() {
-  const { version, notify } = useCopilot();
+  const { version, notify, snapshot } = useCopilot();
   const [data, setData] = useState<IntelligenceData | null>(null);
   const [threshold, setThreshold] = useState<number | null>(null);
 
@@ -36,6 +36,7 @@ export default function IntelligencePage() {
 
   if (!data) return <div className="mx-auto max-w-6xl space-y-4"><Skeleton className="h-24" /><Skeleton className="h-96" /></div>;
 
+  const name = snapshot?.context.profile.firstName ?? "the customer";
   const traces = data.traces.filter((t) => t.type !== "contextual_decision" || t.relevance.surfaced);
   const surfaced = traces.filter((t) => t.relevance.surfaced);
   const bundled = traces.filter((t) => t.bundledInto).length;
@@ -44,7 +45,7 @@ export default function IntelligencePage() {
     <div className="mx-auto max-w-6xl space-y-5">
       <PageHeader
         title="Intelligence view"
-        subtitle="Behind the scenes: how the Co-Pilot decided what Sophie sees. Internal / demo only."
+        subtitle={`Behind the scenes: how the Co-Pilot decided what ${name} sees. Internal / demo only.`}
         action={<Badge tone="neutral">AI: {data.ai.mode}</Badge>}
       />
 
@@ -52,7 +53,7 @@ export default function IntelligencePage() {
 
       <Card className="grid gap-5 p-6 sm:grid-cols-2 lg:grid-cols-5">
         <Stat label="Detectors" value={data.detectors.length} hint="pluggable rules" />
-        <Stat label="Findings" value={traces.length} hint="for Sophie right now" />
+        <Stat label="Findings" value={traces.length} hint={`for ${name} right now`} />
         <Stat label="Surfaced" value={surfaced.length} hint={`at threshold ${data.activeThreshold}`} />
         <Stat label="Merged" value={bundled} hint="bundled into one action" />
         <Stat label="Messages sent" value={data.notifications.length} hint="outside the app" />

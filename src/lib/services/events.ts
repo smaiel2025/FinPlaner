@@ -8,9 +8,7 @@ import { recurringPrice } from "@/lib/engine/signals";
 import type { ScoredOpportunity } from "@/lib/types/intelligence";
 import { addDays } from "@/lib/utils/dates";
 import { goalService, transactionService } from "./mock";
-import { getState, mutate, nextId, resetState } from "./store";
-
-const CUSTOMER = "cust-sophie-001";
+import { currentCustomerId, getState, mutate, nextId, resetState } from "./store";
 
 export type DemoEvent = "insurance_invoice" | "standing_orders" | "reset";
 
@@ -72,13 +70,13 @@ export function triggerEvent(event: DemoEvent): { label: string; notified: Score
   for (const r of state.recurring) {
     const date = `${to.slice(0, 8)}${String(r.dayOfMonth).padStart(2, "0")}`;
     if (r.status === "active" && date > from && date <= to) {
-      transactionService.record(CUSTOMER, { date, amount: -recurringPrice(r, date), category: r.category, merchant: r.merchant, recurringId: r.id });
+      transactionService.record(currentCustomerId(), { date, amount: -recurringPrice(r, date), category: r.category, merchant: r.merchant, recurringId: r.id });
     }
   }
   for (const g of state.goals) {
     if (g.nextTransferDate > from && g.nextTransferDate <= to) {
-      goalService.contribute(CUSTOMER, g.id, g.monthlyContribution, to);
-      goalService.update(CUSTOMER, g.id, { nextTransferDate: addDays(g.nextTransferDate, 31).slice(0, 8) + "01" });
+      goalService.contribute(currentCustomerId(), g.id, g.monthlyContribution, to);
+      goalService.update(currentCustomerId(), g.id, { nextTransferDate: addDays(g.nextTransferDate, 31).slice(0, 8) + "01" });
     }
   }
   log("standing_orders", `${to}: rent and scheduled goal transfers executed`);

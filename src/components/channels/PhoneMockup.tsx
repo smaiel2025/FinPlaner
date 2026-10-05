@@ -2,17 +2,19 @@
 
 import { ArrowLeft, CheckCheck, Phone, Video } from "lucide-react";
 import type { ReactNode } from "react";
+import { useTenant } from "@/components/providers/TenantProvider";
 
 /** WhatsApp-styled phone frame. Visual simulation only - no real messaging integration. */
 export function PhoneMockup({ children, footer }: { children: ReactNode; footer?: ReactNode }) {
+  const { tenant } = useTenant();
   return (
     <div className="mx-auto w-full max-w-[340px] rounded-[44px] bg-ink p-3 shadow-lift">
       <div className="overflow-hidden rounded-[34px] bg-[#efeae2]">
         <div className="flex items-center gap-3 bg-[#075e54] px-4 pb-3 pt-6 text-white">
           <ArrowLeft size={18} />
-          <span className="grid h-9 w-9 place-items-center rounded-full bg-white text-[11px] font-bold text-brand">KBC</span>
+          <span className="grid h-9 w-9 place-items-center rounded-full bg-white text-[11px] font-bold text-brand">{tenant.monogram}</span>
           <div className="flex-1">
-            <div className="text-[14px] font-semibold leading-tight">KBC Co-Pilot</div>
+            <div className="text-[14px] font-semibold leading-tight">{tenant.bankName} Co-Pilot</div>
             <div className="text-[11px] text-white/70">Verified business account</div>
           </div>
           <Video size={17} />

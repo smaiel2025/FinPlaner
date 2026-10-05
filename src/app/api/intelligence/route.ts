@@ -5,6 +5,7 @@ import { scoreAll } from "@/lib/engine";
 import { DETECTORS } from "@/lib/engine/opportunities";
 import { SCORE_WEIGHTS, THRESHOLDS } from "@/lib/engine/relevance";
 import { getState } from "@/lib/services/store";
+import { getActiveTenant } from "@/lib/tenant";
 
 export const dynamic = "force-dynamic";
 
@@ -14,10 +15,11 @@ export function GET(req: NextRequest) {
   const parsed = raw === null ? undefined : Number(raw);
   const threshold = parsed !== undefined && Number.isFinite(parsed) ? Math.max(0, Math.min(100, parsed)) : undefined;
   const state = getState();
+  const enabled = new Set(getActiveTenant().enabledDetectors);
   return ok({
     today: state.today,
     traces: scoreAll(state, threshold),
-    detectors: DETECTORS.map((d) => d.name),
+    detectors: DETECTORS.filter((d) => enabled.has(d.id)).map((d) => d.name),
     weights: SCORE_WEIGHTS,
     thresholds: THRESHOLDS,
     activeThreshold: threshold ?? THRESHOLDS[state.preferences.frequency],

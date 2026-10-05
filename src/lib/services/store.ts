@@ -18,6 +18,10 @@ export function mutate(mutator: (state: CustomerState) => void): CustomerState {
   return state;
 }
 
+export function currentCustomerId(): string {
+  return getState().profile.id;
+}
+
 export function resetState(): CustomerState {
   globalStore.__copilotState = createSeedState();
   return globalStore.__copilotState;

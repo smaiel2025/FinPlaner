@@ -3,10 +3,12 @@
 import clsx from "clsx";
 import { motion } from "framer-motion";
 import { MessageCircle, Sparkles } from "lucide-react";
+import { useTenant } from "@/components/providers/TenantProvider";
 import type { ChatMessage } from "@/lib/types/chat";
 import { BlockView } from "./Blocks";
 
 export function MessageBubble({ message, onSuggest }: { message: ChatMessage; onSuggest: (t: string) => void }) {
+  const { tenant } = useTenant();
   const isUser = message.role === "user";
   const fromWhatsApp = message.channel === "whatsapp";
   return (
@@ -36,7 +38,7 @@ export function MessageBubble({ message, onSuggest }: { message: ChatMessage; on
           </div>
         ) : null}
         {!isUser && message.source && (
-          <div className="mt-1.5 text-[10px] text-slate-400">{message.source === "llm" ? "Phrased by LLM · numbers from the KBC engine" : "Deterministic answer · numbers from the KBC engine"}</div>
+          <div className="mt-1.5 text-[10px] text-slate-400">{message.source === "llm" ? `Phrased by LLM · numbers from the ${tenant.bankName} engine` : `Deterministic answer · numbers from the ${tenant.bankName} engine`}</div>
         )}
       </div>
     </motion.div>
